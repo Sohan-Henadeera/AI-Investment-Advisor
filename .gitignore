@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# AI Advisor Specific
+predbot.db
+.auth
+STOP
+__pycache__/
+*.pyc
+.env
+*.log
+
 # Distribution / packaging
 .Python
 build/

@@ -1,3 +1,10 @@
+# =============================================================================
+# config.py — SINGLE SOURCE OF TRUTH FOR ALL SETTINGS
+# =============================================================================
+# Edit this file to change any bot behaviour.
+# Every setting is documented with what it does and safe values to try.
+# =============================================================================
+
 # ── KALSHI DEMO API ──────────────────────────────────────────────────────────
 # Sign up free at https://demo.kalshi.com → Account → API
 # Leave as-is to use built-in demo data (no real money, no account needed)

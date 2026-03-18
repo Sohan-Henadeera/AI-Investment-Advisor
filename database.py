@@ -1,7 +1,9 @@
 # =============================================================================
 # database.py — ALL DATABASE LOGIC IN ONE PLACE
 # =============================================================================
-
+# TO ADD A NEW TABLE:  add CREATE TABLE in setup_database()
+# TO ADD A NEW QUERY:  add a function at the bottom of this file
+# =============================================================================
 
 import sqlite3
 from datetime import datetime
@@ -18,16 +20,19 @@ def setup_database():
     conn = get_connection()
     c = conn.cursor()
 
+    # Markets scanned by the bot
     c.execute("""CREATE TABLE IF NOT EXISTS markets (
         id TEXT PRIMARY KEY, title TEXT, platform TEXT,
         yes_price REAL, no_price REAL, volume REAL,
         days_to_expiry INTEGER, flagged INTEGER DEFAULT 0, last_scanned TEXT)""")
 
+    # AI predictions per market
     c.execute("""CREATE TABLE IF NOT EXISTS predictions (
         id INTEGER PRIMARY KEY AUTOINCREMENT, market_id TEXT,
         our_probability REAL, market_price REAL, edge REAL,
         reasoning TEXT, created_at TEXT)""")
 
+    # Every trade (paper or real)
     c.execute("""CREATE TABLE IF NOT EXISTS trades (
         id INTEGER PRIMARY KEY AUTOINCREMENT, market_id TEXT, market_title TEXT,
         direction TEXT, entry_price REAL, size REAL, kelly_size REAL,
@@ -35,8 +40,9 @@ def setup_database():
         exit_price REAL, pnl REAL, notes TEXT, tags TEXT,
         opened_at TEXT, closed_at TEXT)""")
 
-    # Watchlist holdings
-
+    # ── Watchlist holdings — CommSec-style position tracking ─────────────────
+    # Each row = one market you're watching or holding a position in.
+    # bought_price + units enables unrealised P&L calculation.
     c.execute("""CREATE TABLE IF NOT EXISTS watchlist (
         id            INTEGER PRIMARY KEY AUTOINCREMENT,
         title         TEXT NOT NULL,
@@ -56,6 +62,7 @@ def setup_database():
         added_at      TEXT,
         updated_at    TEXT)""")
 
+    # Daily AI reports
     c.execute("""CREATE TABLE IF NOT EXISTS daily_reports (
         id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT UNIQUE,
         report TEXT, created_at TEXT)""")
@@ -65,7 +72,7 @@ def setup_database():
     print("✓ Database ready")
 
 
-# MARKET FUNCTIONS
+# ── MARKET FUNCTIONS ─────────────────────────────────────────────────────────
 
 def save_market(market: dict):
     conn = get_connection(); c = conn.cursor()
@@ -87,7 +94,7 @@ def get_markets(limit=100):
     return [dict(zip(keys,r)) for r in rows]
 
 
-# PREDICTION FUNCTIONS
+# ── PREDICTION FUNCTIONS ─────────────────────────────────────────────────────
 
 def save_prediction(prediction: dict):
     conn = get_connection(); c = conn.cursor()
@@ -108,7 +115,7 @@ def get_predictions(limit=50):
     return [dict(zip(keys,r)) for r in rows]
 
 
-# TRADE FUNCTIONS
+# ── TRADE FUNCTIONS ──────────────────────────────────────────────────────────
 
 def save_trade(trade: dict):
     conn = get_connection(); c = conn.cursor()
@@ -164,7 +171,7 @@ def get_stats():
             "markets_scanned":mkt,"predictions_run":pred}
 
 
-# WATCHLIST FUNCTIONS
+# ── WATCHLIST FUNCTIONS ──────────────────────────────────────────────────────
 
 def add_watchlist_item(item: dict) -> int:
     """Adds a holding/watchlist entry. Returns new row id."""
@@ -210,6 +217,7 @@ def get_watchlist() -> list:
         u  = item["units"] or 0
 
         if bp and u:
+            # YES position gains when price rises; NO position gains when price falls
             if item.get("direction") == "NO":
                 item["unrealised_pnl"] = round((float(bp)-cp)*u, 4)
                 item["current_value"]  = round((1-cp)*u, 4)
@@ -279,7 +287,7 @@ def get_watchlist_summary() -> dict:
     }
 
 
-# DAILY REPORT FUNCTIONS
+# ── DAILY REPORT FUNCTIONS ───────────────────────────────────────────────────
 
 def save_daily_report(report_text: str):
     today = datetime.now().strftime("%Y-%m-%d")

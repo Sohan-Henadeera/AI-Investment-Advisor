@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
+<!--
+  gui.html — PredBot v1 Frontend
+  =====================================================
+  PAGES:  dashboard | markets | predictions | trades | watchlist | advisor | security
+  TO ADD A NEW TAB: add .tab button in nav + .page div in main + loader in nav() switch
+  =====================================================
+-->
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>AI Investment Advisor v1</title>
+<title>PredBot v1</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-
-/* CSS VARIABLES*/
+/* ── CSS VARIABLES ── edit here to retheme everything ── */
 :root{
   --bg:#eceff4;--bg2:#e5e9f0;--bg3:#d8dee9;
   --sf:#fff;--bd:#d8dee9;--bd2:#c8d0de;
@@ -112,18 +116,19 @@ tbody tr:hover{background:var(--bg)}
 .clbl{font-family:var(--mono);color:var(--tx3)}
 .cval{font-family:var(--mono);font-weight:500;color:var(--blue)}
 
-/* WATCHLIST */
+/* ── WATCHLIST — CommSec-style cards ─────────────────────────────── */
+/* Portfolio summary bar at top */
 .portfolio-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:22px}
 .pb-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:14px;text-align:center}
 .pb-lbl{font-size:10px;font-weight:500;color:var(--tx3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px}
 .pb-val{font-size:22px;font-weight:600;letter-spacing:-.02em}
 .pb-sub{font-size:11px;color:var(--tx3);margin-top:3px}
 
-/* Holding row */
+/* Holding row — one per watchlist item */
 .holding{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:10px;overflow:hidden;transition:border-color .15s}
 .holding:hover{border-color:var(--bd2)}
 .holding-main{display:grid;grid-template-columns:1fr auto;align-items:center;padding:14px 16px;gap:12px;cursor:pointer}
-/* .holding-left{} */
+.holding-left{}
 .holding-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:3px}
 .holding-meta{display:flex;gap:12px;font-family:var(--mono);font-size:11px;color:var(--tx3);flex-wrap:wrap}
 .holding-right{text-align:right;flex-shrink:0}
@@ -230,7 +235,7 @@ textarea{resize:vertical;min-height:60px}
 <header>
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 16 16"><path d="M8 1L15 5V11L8 15L1 11V5L8 1Z"/></svg></div>
-    <div class="logo-text"><i>AI</i> Investment Advisor <span style="font-size:10px;font-weight:400;color:var(--tx3);margin-left:4px">v1</span></div>
+    <div class="logo-text">Pred<span>Bot</span> <span style="font-size:10px;font-weight:400;color:var(--tx3);margin-left:4px">v1</span></div>
   </div>
   <div class="hdr-right">
     <div class="pill"><div class="dot" id="bot-dot"></div><span id="bot-lbl">Idle</span></div>
@@ -241,7 +246,7 @@ textarea{resize:vertical;min-height:60px}
   </div>
 </header>
 
-<!-- NAV -->
+<!-- NAV — add new tab buttons here -->
 <nav>
   <button class="tab active" data-p="dashboard"  onclick="nav('dashboard')">Dashboard</button>
   <button class="tab"        data-p="watchlist"   onclick="nav('watchlist')">Watchlist</button>
@@ -254,7 +259,9 @@ textarea{resize:vertical;min-height:60px}
 
 <main>
 
-<!-- DASHBOARD -->
+<!-- ═══════════════════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════════════════ -->
 <div class="page active" id="page-dashboard">
   <div class="stats-grid">
     <div class="stat-card"><div class="stripe"></div><div class="slbl">Markets Scanned</div><div class="sval" id="s-mkt">—</div></div>
@@ -289,7 +296,9 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 
-<!-- WATCHLIST  -->
+<!-- ═══════════════════════════════════════════════════════
+     WATCHLIST — CommSec-style holdings tracker
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-watchlist">
 
   <!-- Portfolio summary bar -->
@@ -307,11 +316,13 @@ textarea{resize:vertical;min-height:60px}
     <button class="btn bg sm" onclick="openModal('cmp-modal')">⇄ Compare Two</button>
   </div>
 
-  <div id="holdings-list"><div class="empty"><div class="empty-i">📊</div>Your watchlist is empty - add markets you're watching or holding</div></div>
+  <div id="holdings-list"><div class="empty"><div class="empty-i">📊</div>Your watchlist is empty — add markets you're watching or holding</div></div>
 </div>
 
 
-<!-- AI ADVISOR -->
+<!-- ═══════════════════════════════════════════════════════
+     AI ADVISOR
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-advisor">
   <div class="itabs">
     <button class="itab active" onclick="itab('adv-chat',this)">Chat</button>
@@ -322,7 +333,7 @@ textarea{resize:vertical;min-height:60px}
     <p style="font-size:12px;color:var(--tx3);margin-bottom:12px;font-family:var(--mono)">Ask anything about your holdings, trades, risk, or market outlook. The AI knows your full portfolio.</p>
     <div class="chat-wrap">
       <div class="chat-msgs" id="chat-msgs">
-        <div class="cmsg bot">Hi! I'm your Investment AI advisor. I can see your watchlist holdings, open positions, and portfolio stats. Ask me anything — should you hold or sell? What's your biggest risk? Which market should you enter today?</div>
+        <div class="cmsg bot">Hi! I'm your PredBot AI advisor. I can see your watchlist holdings, open positions, and portfolio stats. Ask me anything — should you hold or sell? What's your biggest risk? Which market should you enter today?</div>
       </div>
       <div class="cin-wrap">
         <input type="text" id="chat-in" placeholder="Ask about your portfolio, holdings, or markets..." onkeydown="if(event.key==='Enter')sendChat()"/>
@@ -348,7 +359,9 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 
-<!-- TRADES -->
+<!-- ═══════════════════════════════════════════════════════
+     TRADES
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-trades">
   <div class="sh">
     <div class="st">All Trades</div>
@@ -365,25 +378,32 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 
-<!-- LIVE MARKETS — dual platform price feed-->
+<!-- ═══════════════════════════════════════════════════════
+     LIVE MARKETS — dual platform price feed
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-markets">
 
   <!-- Platform status bar -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px">
     <div class="stat-card" style="padding:12px">
       <div class="slbl">Polymarket</div>
       <div style="font-size:18px;font-weight:600" id="pm-count">—</div>
-      <div class="ssub">No auth required ✓</div>
+      <div class="ssub">Free, no auth ✓</div>
     </div>
     <div class="stat-card" style="padding:12px">
-      <div class="slbl">Kalshi</div>
+      <div class="slbl">Metaculus</div>
       <div style="font-size:18px;font-weight:600" id="km-count">—</div>
-      <div class="ssub" id="km-status">Needs API key in config.py</div>
+      <div class="ssub">Free, no auth ✓</div>
     </div>
     <div class="stat-card" style="padding:12px">
-      <div class="slbl">Arb Opportunities</div>
+      <div class="slbl">Manifold</div>
+      <div style="font-size:18px;font-weight:600" id="mf-count">—</div>
+      <div class="ssub">Free, no auth ✓</div>
+    </div>
+    <div class="stat-card" style="padding:12px">
+      <div class="slbl">Disagreements</div>
       <div style="font-size:18px;font-weight:600;color:var(--yellow-dk)" id="arb-count">—</div>
-      <div class="ssub">Price spread &gt; 3% between platforms</div>
+      <div class="ssub">Platforms differ &gt;5%</div>
     </div>
   </div>
 
@@ -392,10 +412,11 @@ textarea{resize:vertical;min-height:60px}
     <div class="row" style="margin:0;gap:8px">
       <select id="mkt-filter" onchange="filterMarkets()" style="font-size:12px;padding:5px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--bd);color:var(--tx)">
         <option value="all">All Markets</option>
-        <option value="arb">Arb Opportunities</option>
+        <option value="disagree">Platform Disagreements</option>
+        <option value="multi">On Multiple Platforms</option>
         <option value="polymarket">Polymarket Only</option>
-        <option value="kalshi">Kalshi Only</option>
-        <option value="both">On Both Platforms</option>
+        <option value="metaculus">Metaculus Only</option>
+        <option value="manifold">Manifold Only</option>
       </select>
       <button class="btn bg sm" onclick="loadLiveMarkets(false)">↻ Refresh</button>
       <span style="font-size:10px;color:var(--tx3);font-family:var(--mono)" id="mkt-updated"></span>
@@ -404,31 +425,36 @@ textarea{resize:vertical;min-height:60px}
 
   <!-- Legend -->
   <div style="display:flex;gap:16px;margin-bottom:12px;font-size:11px;font-family:var(--mono);color:var(--tx3)">
-    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:4px"></span>Arb flag (platforms differ &gt;3%)</span>
-    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:4px"></span>Kalshi price (more accurate)</span>
-    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:4px"></span>Polymarket price</span>
+    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:4px"></span>Platforms disagree &gt;5%</span>
+    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:4px"></span>Polymarket</span>
+    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:4px"></span>Metaculus</span>
+    <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>Manifold</span>
   </div>
 
   <div class="tw"><table>
-    <thead><tr><th></th><th>Market</th><th>Kalshi</th><th>Polymarket</th><th>Spread</th><th>Volume</th><th>Platform</th><th></th></tr></thead>
+    <thead><tr><th></th><th>Market</th><th>Poly</th><th>Meta</th><th>Manifold</th><th>Consensus</th><th>Volume</th><th></th></tr></thead>
     <tbody id="markets-tb"><tr><td colspan="8"><div class="empty"><div class="empty-i">📡</div>Click Refresh to load live market data</div></td></tr></tbody>
   </table></div>
 
   <p style="font-size:11px;color:var(--tx3);font-family:var(--mono);margin-top:-10px">
-    Polymarket data: public, no auth. Kalshi data: requires API key in config.py.
-    Accuracy: Kalshi 78% | Polymarket 67% (source: DL News / academic study, Dec 2025).
+    All sources free, no API key, no geo-restrictions. Works from Australia.
+    Polymarket (read-only) + Metaculus (crowd forecasts) + Manifold (play-money).
   </p>
 </div>
 
 
-<!-- PREDICTIONS -->
+<!-- ═══════════════════════════════════════════════════════
+     PREDICTIONS
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-predictions">
   <div class="sh"><div class="st">AI Predictions</div><button class="btn bg sm" onclick="loadPredictions()">↻</button></div>
   <div id="pred-list"><div class="empty"><div class="empty-i">🤖</div>No predictions yet — run a scan with Ollama running</div></div>
 </div>
 
 
-<!-- SECURITY -->
+<!-- ═══════════════════════════════════════════════════════
+     SECURITY
+═══════════════════════════════════════════════════════ -->
 <div class="page" id="page-security">
   <div class="kz">
     <div><h3>Kill Switch</h3><p id="ks-txt">Inactive — bot can trade</p></div>
@@ -467,7 +493,9 @@ textarea{resize:vertical;min-height:60px}
 </div><!-- end .app -->
 
 
-<!-- MODALS -->
+<!-- ═══════════════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════════════ -->
 
 <!-- Add to watchlist -->
 <div class="mover" id="wl-modal">
@@ -567,16 +595,18 @@ textarea{resize:vertical;min-height:60px}
 
 <div id="toast"></div>
 
-<!-- JAVASCRIPT -->
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
 <script>
 'use strict';
 let currentPage = 'dashboard';
 
-//  THEME
+// ── THEME ──────────────────────────────────────────────
 function toggleDark(){const d=document.documentElement.getAttribute('data-theme')==='dark';document.documentElement.setAttribute('data-theme',d?'':'dark');localStorage.setItem('theme',d?'light':'dark')}
 if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
 
-// NAVIGATION
+// ── NAVIGATION ─────────────────────────────────────────
 function nav(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -597,17 +627,17 @@ function itab(name,el){
   el.classList.add('active');
 }
 
-// MODAL
+// ── MODAL ───────────────────────────────────────────────
 function om(id){document.getElementById(id).classList.add('open')}
 function cm(id){document.getElementById(id).classList.remove('open')}
 function openModal(id){om(id)}
 function closeModal(id){cm(id)}
 document.addEventListener('click',e=>{if(e.target.classList.contains('mover'))cm(e.target.id)});
 
-// TOAST
+// ── TOAST ───────────────────────────────────────────────
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' t'+type:'');setTimeout(()=>t.className='',3000)}
 
-// API HELPERS
+// ── API HELPERS ─────────────────────────────────────────
 async function api(p){try{return await(await fetch(p)).json()}catch(e){return{error:e.message}}}
 async function post(p,b={}){try{return await(await fetch(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})).json()}catch(e){return{error:e.message}}}
 async function del(p){try{return await(await fetch(p,{method:'DELETE'})).json()}catch(e){return{error:e.message}}}
@@ -617,7 +647,7 @@ function esc(s){return(s||'').replace(/'/g,"\\'")}
 function fmt(n,d=2){return n!=null?Number(n).toFixed(d):'—'}
 function fmtPnl(n){if(n==null)return'—';return(n>=0?'+':'')+`$${Math.abs(n).toFixed(2)}`}
 
-// STATS 
+// ── STATS ───────────────────────────────────────────────
 async function loadStats(){
   const d=await api('/api/stats');if(d.error)return;
   document.getElementById('s-mkt').textContent=d.markets_scanned||0;
@@ -651,29 +681,25 @@ async function loadStats(){
 
 function refreshDash(){loadStats();loadRecentTrades();loadLogs();toast('Refreshed')}
 
-// LIVE MARKETS
+// ── LIVE MARKETS ─────────────────────────────────────────
 let _liveMarketsData = [];
 
 async function loadMarkets(){ loadLiveMarkets(true); }
 
 async function loadLiveMarkets(useCache=true){
   const tb=document.getElementById('markets-tb');
-  tb.innerHTML=erow(8,'📡','Loading live market data...');
+  tb.innerHTML=erow(8,'📡','Loading live market data from Polymarket, Metaculus & Manifold...');
   const endpoint = useCache ? '/api/live/markets' : '/api/live/markets/refresh';
   const data=await api(endpoint);
 
   if(data.error){tb.innerHTML=erow(8,'✗','Error: '+data.error);return}
 
-  // Update status bar
   document.getElementById('pm-count').textContent = data.poly_count||0;
-  document.getElementById('km-count').textContent = data.kalshi_count||0;
-  const arbCount = (data.combined||[]).filter(m=>m.arb_flag).length;
+  document.getElementById('km-count').textContent = data.meta_count||0;
+  document.getElementById('mf-count').textContent = data.manifold_count||0;
+  const arbCount = (data.combined||[]).filter(m=>m.disagree_flag).length;
   document.getElementById('arb-count').textContent = arbCount;
   document.getElementById('mkt-updated').textContent = 'Updated: '+(data.last_updated||'');
-  if(data.kalshi_count>0){
-    document.getElementById('km-status').textContent='Connected ✓';
-    document.getElementById('km-status').style.color='var(--green-dk)';
-  }
 
   _liveMarketsData = data.combined||[];
   renderMarketsTable(_liveMarketsData);
@@ -682,10 +708,11 @@ async function loadLiveMarkets(useCache=true){
 function filterMarkets(){
   const f=document.getElementById('mkt-filter').value;
   let filtered=_liveMarketsData;
-  if(f==='arb')      filtered=filtered.filter(m=>m.arb_flag);
-  if(f==='polymarket')filtered=filtered.filter(m=>m.platform==='polymarket'&&!m.kalshi_price);
-  if(f==='kalshi')   filtered=filtered.filter(m=>m.platform==='kalshi'&&!m.poly_price);
-  if(f==='both')     filtered=filtered.filter(m=>m.kalshi_price&&m.poly_price);
+  if(f==='disagree')   filtered=filtered.filter(m=>m.disagree_flag);
+  if(f==='multi')      filtered=filtered.filter(m=>m.platform_count>1);
+  if(f==='polymarket') filtered=filtered.filter(m=>m.source==='polymarket'&&m.platform_count===1);
+  if(f==='metaculus')  filtered=filtered.filter(m=>m.source==='metaculus'&&m.platform_count===1);
+  if(f==='manifold')   filtered=filtered.filter(m=>m.source==='manifold'&&m.platform_count===1);
   renderMarketsTable(filtered);
 }
 
@@ -693,18 +720,19 @@ function renderMarketsTable(markets){
   const tb=document.getElementById('markets-tb');
   if(!markets.length){tb.innerHTML=erow(8,'❄','No markets match this filter');return}
   tb.innerHTML=markets.map(m=>{
-    const kp=m.kalshi_price!=null?`<b style="color:var(--blue)">${(m.kalshi_price*100).toFixed(0)}¢</b>`:`<span style="color:var(--tx3)">—</span>`;
-    const pp=m.poly_price!=null?`<span style="color:#2e8e9a">${(m.poly_price*100).toFixed(0)}¢</span>`:`<span style="color:var(--tx3)">—</span>`;
-    const spread=m.spread!=null?`<span style="${m.arb_flag?'color:var(--yellow-dk);font-weight:600':'color:var(--tx3)'}">${(m.spread*100).toFixed(1)}¢</span>`:'—';
-    const arbDot=m.arb_flag?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:4px"></span>`:'';
-    return`<tr style="${m.arb_flag?'background:rgba(235,203,139,0.05)':''}">
+    const pp  = m.poly_price!=null     ? `<span style="color:#2e8e9a">${(m.poly_price*100).toFixed(0)}¢</span>` : `<span style="color:var(--tx3)">—</span>`;
+    const mp  = m.meta_price!=null     ? `<span style="color:var(--blue-dk)">${(m.meta_price*100).toFixed(0)}¢</span>` : `<span style="color:var(--tx3)">—</span>`;
+    const mfp = m.manifold_price!=null ? `<span style="color:var(--green-dk)">${(m.manifold_price*100).toFixed(0)}¢</span>` : `<span style="color:var(--tx3)">—</span>`;
+    const con = `<b>${((m.yes_price||0.5)*100).toFixed(0)}¢</b>${m.platform_count>1?` <span style="font-size:9px;color:var(--tx3)">(${m.platform_count} platforms)</span>`:''}`;
+    const spreadStr = m.platform_spread ? `<span style="${m.disagree_flag?'color:var(--yellow-dk);font-weight:600':'color:var(--tx3)'}">${(m.platform_spread*100).toFixed(0)}¢ spread</span>` : '';
+    const arbDot = m.disagree_flag ? `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow)"></span>` : '';
+    const vol = (m.volume||0)>999 ? ((m.volume/1000).toFixed(0)+'k') : Math.round(m.volume||0);
+    return`<tr style="${m.disagree_flag?'background:rgba(235,203,139,0.05)':''}">
       <td>${arbDot}</td>
-      <td class="tdx" style="max-width:260px">${m.title}</td>
-      <td>${kp}</td>
-      <td>${pp}</td>
-      <td>${spread}</td>
-      <td style="color:var(--tx3)">${(m.volume||0)>999?((m.volume/1000).toFixed(0)+'k'):Math.round(m.volume||0)}</td>
-      <td style="color:var(--tx3);font-size:10px">${m.platform}</td>
+      <td class="tdx" style="max-width:240px" title="${m.url||''}">${m.title}</td>
+      <td>${pp}</td><td>${mp}</td><td>${mfp}</td>
+      <td>${con}</td>
+      <td style="color:var(--tx3);font-size:11px">${vol}</td>
       <td><button class="btn bg sm" onclick="addFromMarket('${esc(m.title)}',${Math.round((m.yes_price||0.5)*100)})">+ Watch</button></td>
     </tr>`;
   }).join('');
@@ -716,7 +744,7 @@ function addFromMarket(title,price){
   om('wl-modal');
 }
 
-// PREDICTIONS
+// ── PREDICTIONS ─────────────────────────────────────────
 async function loadPredictions(){
   const ps=await api('/api/predictions');
   const el=document.getElementById('pred-list');
@@ -739,7 +767,7 @@ async function loadPredictions(){
 }
 function toggleR(btn){const b=btn.closest('.pc').querySelector('.reasoning');const o=b.style.display==='block';b.style.display=o?'none':'block';btn.textContent=o?'reasoning ▾':'reasoning ▴'}
 
-// TRADES
+// ── TRADES ──────────────────────────────────────────────
 async function loadTrades(){renderTrades('trades-tb',await api('/api/trades'),8)}
 async function loadRecentTrades(){const ts=await api('/api/trades');renderTrades('dash-tb',ts.slice(0,6),7)}
 
@@ -789,7 +817,7 @@ async function submitManualTrade(){
   cm('mt-modal');toast('Trade logged','g');loadTrades();loadRecentTrades();loadStats();
 }
 
-// WATCHLIST
+// ── WATCHLIST ────────────────────────────────────────────
 async function loadWatchlist(){
   const [items, summary] = await Promise.all([api('/api/watchlist'), api('/api/watchlist/summary')]);
 
@@ -950,7 +978,7 @@ async function submitWatchlist(){
 async function refreshAllPrices(){
   const btn=document.getElementById('refresh-prices-btn');
   btn.disabled=true;btn.textContent='📡 Fetching...';
-  toast('Fetching live prices from Polymarket + Kalshi...','y');
+  toast('Fetching live prices from Polymarket, Metaculus & Manifold...','y');
   const r=await post('/api/watchlist/refresh-prices');
   btn.disabled=false;btn.textContent='📡 Refresh Live Prices';
   if(r.error){toast('Error: '+r.error,'r');return}
@@ -969,7 +997,7 @@ async function submitCompare(){
   resultEl.textContent=r.comparison||r.error||'Could not compare.';
 }
 
-// AI ADVISOR
+// ── AI ADVISOR ───────────────────────────────────────────
 async function sendChat(){
   const inp=document.getElementById('chat-in');
   const msg=inp.value.trim();if(!msg)return;
@@ -1002,7 +1030,7 @@ async function generateReport(){
   toast('Report generated','g');
 }
 
-// BOT CONTROLS
+// ── BOT CONTROLS ─────────────────────────────────────────
 async function triggerScan(){
   const btn=document.getElementById('scan-btn');
   btn.disabled=true;btn.textContent='⏳ Scanning...';
@@ -1026,7 +1054,7 @@ async function toggleKill(activate){
   loadStats();
 }
 
-// LOGS
+// ── LOGS ─────────────────────────────────────────────────
 async function loadLogs(){
   const d=await api('/api/logs');
   const el=document.getElementById('log-panel');
@@ -1041,7 +1069,7 @@ async function loadLogs(){
   el.scrollTop=0;
 }
 
-// SECURITY
+// ── SECURITY ─────────────────────────────────────────────
 async function loadSecurity(){loadAudit();loadStats()}
 
 async function setPassword(){
@@ -1070,10 +1098,10 @@ async function loadAudit(){
     </div>`).join('');
 }
 
-// UTILITIES
+// ── UTILITIES ─────────────────────────────────────────────
 function erow(cols,icon,msg){return`<tr><td colspan="${cols}"><div class="empty"><div class="empty-i">${icon}</div>${msg}</div></td></tr>`}
 
-// AUTO-REFRESH
+// ── AUTO-REFRESH ─────────────────────────────────────────
 window.addEventListener('load',()=>{
   loadStats();loadRecentTrades();loadLogs();
   setInterval(()=>{

@@ -1,12 +1,22 @@
 # =============================================================================
+# bot/scanner.py — ONE JOB: FIND AND FILTER MARKETS
+# =============================================================================
+# Now uses LIVE data from Polymarket (free, no auth) as primary source,
+# with Kalshi as supplementary when API key is configured.
+# Falls back to demo data if both fail.
+#
 # DATA QUALITY:
 #   Polymarket: 67% accuracy, highest volume, no auth needed
 #   Kalshi:     78% accuracy, most accurate, requires API key
+#
+# TO CHANGE FILTERS: edit the filter block in scan_markets()
+# TO CHANGE FLAGGING: edit flag_market()
 # =============================================================================
 
 from datetime import datetime, timedelta
 from config import MIN_VOLUME, MAX_DAYS_TO_EXPIRY
-from database import save_ma, save_market
+from database import save_market
+
 # Import live price feed
 try:
     from bot.live_prices import fetch_polymarket_markets, fetch_kalshi_markets, get_live_markets
@@ -34,7 +44,7 @@ def parse_days_to_expiry(end_date: str) -> int:
     if not end_date:
         return 15
     try:
-
+        # Try ISO format
         dt = datetime.fromisoformat(end_date.replace("Z","").replace("+00:00",""))
         return max(0, (dt - datetime.now()).days)
     except Exception:
@@ -80,7 +90,7 @@ def normalise_market(raw: dict, platform: str) -> dict | None:
         "kalshi_price":  raw.get("kalshi_price"),
         "spread":        raw.get("spread"),
         "arb_flag":      raw.get("arb_flag", False),
-        "flagged":       0, 
+        "flagged":       0,  # set below
     }
 
 
@@ -95,7 +105,7 @@ def scan_markets() -> list:
     skipped   = 0
     source    = "demo"
 
-    # Try live feed first 
+    # ── Try live feed first ──────────────────────────────────────────────────
     if LIVE_FEED_AVAILABLE:
         live = get_live_markets(use_cache=False)
         raw_markets = live.get("combined", [])
